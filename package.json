@@ -1,0 +1,16 @@
+{
+  "name": "casaubicuocontroller",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "commander": "^2.19.0",
+    "firebase-admin": "^6.1.0",
+    "serialport": "^7.0.2"
+  }
+}
