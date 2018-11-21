@@ -3,17 +3,17 @@ var SerialPort = require('serialport');
 var Readline = require('@serialport/parser-readline')
 const Ready = require('@serialport/parser-ready')
 var port = new SerialPort('/dev/cu.usbmodem1411', {
-    baudRate: 9600
+    baudRate: 921600
 });
 
 /// linea de inicio para saber que se puede comenzar a enviar comandos 
-const parser = port.pipe(new Ready({ delimiter: 'Input 1 to Turn LED on and 2 to off' }));
+const parser = port.pipe(new Ready({ delimiter: 'Ready' }));
 
 
-const parserOut = port.pipe(new Readline({delimiter: '\n'}));
+const parserOut = port.pipe(new Readline({delimiter: "\r\n"}));
 parser.on('ready', () => {
     
-    parserOut.on('data', console.log);
+    
     
     var serviceAccount = require("./smartHouseAuth.json");
     
@@ -33,6 +33,8 @@ parser.on('ready', () => {
     var living = db.ref("living1");
     var parking = db.ref("parking");
     var storage = db.ref("storage");
+    var window = db.ref("window");
+    var color = db.ref("color");
 
     //put data to arduinio
     var sendToArduinio = option=>{
@@ -48,6 +50,27 @@ parser.on('ready', () => {
             
         }, 1000);
     }
+    //parse data to send window status 
+    parserOut.on('data', (data) =>{
+        
+        switch (data.toString()) {
+            //switch cases to interpreter window open
+            case '1':
+                console.log("desde wopen");
+                window.set({value: true});
+                break;
+            case '2':
+                window.set({value: false});
+                console.log("desde wclose");
+            break   
+        
+            default:
+                
+                break;
+        }
+        port.flush();
+
+    });
 
     // Attach an asynchronous callback to read the data 
     bathroom.on("value", function (snapshot) {
@@ -201,6 +224,38 @@ parser.on('ready', () => {
 
         }
 
+
+    }, function (errorObject) {
+        console.log("The read failed: " + errorObject.code);
+    });
+
+    // Attach an asynchronous callback to read the data 
+    door.on("value", function (snapshot) {
+        console.log("door: ", snapshot.val().value);
+        if (snapshot.val().value == 1) {
+            console.log("on");
+
+            //valor que corresponde para encender el elemento bathroom
+            sendToArduinio("1");
+
+
+        }
+        else {
+            console.log("off");
+            // valor que corresponde para apagar el elemento bathroom
+            sendToArduinio("2");
+
+        }
+
+
+    }, function (errorObject) {
+        console.log("The read failed: " + errorObject.code);
+    });
+
+    color.on("value", function (snapshot) {
+        console.log("color: ", snapshot.val().value);
+        //valor que corresponde para cambiar color de led el elemento bathroom
+        sendToArduinio(snapshot.val().value);
 
     }, function (errorObject) {
         console.log("The read failed: " + errorObject.code);
