@@ -2,8 +2,8 @@ var admin = require("firebase-admin");
 var SerialPort = require('serialport');
 var Readline = require('@serialport/parser-readline')
 const Ready = require('@serialport/parser-ready')
-var port = new SerialPort('/dev/cu.usbmodem1411', {
-    baudRate: 921600
+var port = new SerialPort('/dev/cu.usbmodem1421', {
+    baudRate: 9600
 });
 
 /// linea de inicio para saber que se puede comenzar a enviar comandos 
@@ -12,7 +12,7 @@ const parser = port.pipe(new Ready({ delimiter: 'Ready' }));
 
 const parserOut = port.pipe(new Readline({delimiter: "\r\n"}));
 parser.on('ready', () => {
-    
+
     
     
     var serviceAccount = require("./smartHouseAuth.json");
@@ -38,37 +38,35 @@ parser.on('ready', () => {
 
     //put data to arduinio
     var sendToArduinio = option=>{
-       
-        setTimeout(() => {
+        console.log(option);
 
             port.write(option, function (err) {
                 if (err) {
                     return console.log('Error on write: ', err.message);
                 }
                 console.log('message written');
-            });
-            
-        }, 1000);
+            });  
+       
     }
     //parse data to send window status 
     parserOut.on('data', (data) =>{
         
         switch (data.toString()) {
             //switch cases to interpreter window open
-            case '1':
-                console.log("desde wopen");
+            case 'wopen':
+                //console.log("desde wopen");
                 window.set({value: true});
                 break;
-            case '2':
+            case 'wclosed':
                 window.set({value: false});
-                console.log("desde wclose");
+                //console.log("desde wclose");
             break   
         
             default:
-                
+                console.log(data);
                 break;
         }
-        port.flush();
+        //port.flush();
 
     });
 
@@ -79,14 +77,14 @@ parser.on('ready', () => {
             console.log("on");
 
             //valor que corresponde para encender el elemento bathroom
-            sendToArduinio("1");
+            sendToArduinio("a\n");
 
 
         }
         else {
             console.log("off");
             // valor que corresponde para apagar el elemento bathroom
-            sendToArduinio("2");
+            sendToArduinio("b\n");
 
         }
 
@@ -102,7 +100,7 @@ parser.on('ready', () => {
             console.log("on");
 
             //valor que corresponde  para encender bedroom1
-            sendToArduinio("1");
+            sendToArduinio("c\n");
 
 
         }
@@ -110,7 +108,7 @@ parser.on('ready', () => {
             console.log("off");
 
             //valor que corresponde para encender bedroom1
-            sendToArduinio("2");
+            sendToArduinio("d\n");
 
         }
 
@@ -125,14 +123,14 @@ parser.on('ready', () => {
         if (snapshot.val().value == 1) {
             console.log("on");
 
-            sendToArduinio("1");
+            sendToArduinio("e\n");
 
 
         }
         else {
             console.log("off");
 
-            sendToArduinio("2");
+            sendToArduinio("f\n");
 
         }
 
@@ -147,14 +145,14 @@ parser.on('ready', () => {
         if (snapshot.val().value == 1) {
             console.log("on");
 
-            sendToArduinio("1");
+            sendToArduinio("g\n");
 
 
         }
         else {
             console.log("off");
 
-            sendToArduinio("2");
+            sendToArduinio("h\n");
 
         }
 
@@ -169,14 +167,14 @@ parser.on('ready', () => {
         if (snapshot.val().value == 1) {
             console.log("on");
 
-            sendToArduinio("1");
+            sendToArduinio("i\n");
 
 
         }
         else {
             console.log("off");
 
-            sendToArduinio("2");
+            sendToArduinio("j\n");
 
         }
 
@@ -191,14 +189,14 @@ parser.on('ready', () => {
         if (snapshot.val().value == 1) {
             console.log("on");
 
-            sendToArduinio("1");
+            sendToArduinio("k\n");
 
 
         }
         else {
             console.log("off");
 
-            sendToArduinio("2");
+            sendToArduinio("l\n");
 
         }
 
@@ -213,14 +211,14 @@ parser.on('ready', () => {
         if (snapshot.val().value == 1) {
             console.log("on");
 
-            sendToArduinio("1");
+            sendToArduinio("m\n");
 
 
         }
         else {
             console.log("off");
 
-            sendToArduinio("2");
+            sendToArduinio("n\n");
 
         }
 
@@ -236,14 +234,14 @@ parser.on('ready', () => {
             console.log("on");
 
             //valor que corresponde para encender el elemento bathroom
-            sendToArduinio("1");
+            sendToArduinio("o\n");
 
 
         }
         else {
             console.log("off");
             // valor que corresponde para apagar el elemento bathroom
-            sendToArduinio("2");
+            sendToArduinio("p\n");
 
         }
 
@@ -255,7 +253,7 @@ parser.on('ready', () => {
     color.on("value", function (snapshot) {
         console.log("color: ", snapshot.val().value);
         //valor que corresponde para cambiar color de led el elemento bathroom
-        sendToArduinio(snapshot.val().value);
+        sendToArduinio(snapshot.val().value+"\n");
 
     }, function (errorObject) {
         console.log("The read failed: " + errorObject.code);
