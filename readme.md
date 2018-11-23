@@ -9,6 +9,7 @@ Despues de instalacion, modificar en index.js el puerto com en el que se conecta
 El arduinio debe de enviar un mensaje de inicio para detectar que está listo para recibir comandos 
 
 // linea de inicio para saber que se puede comenzar a enviar comandos 
+
     const parser = port.pipe(new Ready({ delimiter: 'Input 1 to Turn LED on and 2 to off' }));
 
 modificar la funcion sendToArduinio con el parametro que corresponda para realizar la accion en el arduinio de cada uno de los focos 

@@ -69,7 +69,15 @@ parser.on('ready', () => {
         //port.flush();
 
     });
+    
+    color.on("value", function (snapshot) {
+        console.log("color: ", snapshot.val().value);
+        //valor que corresponde para cambiar color de led el elemento bathroom
+        sendToArduinio(snapshot.val().value+"\n");
 
+    }, function (errorObject) {
+        console.log("The read failed: " + errorObject.code);
+    });
     // Attach an asynchronous callback to read the data 
     bathroom.on("value", function (snapshot) {
         console.log("bathroom: ", snapshot.val().value);
@@ -250,12 +258,5 @@ parser.on('ready', () => {
         console.log("The read failed: " + errorObject.code);
     });
 
-    color.on("value", function (snapshot) {
-        console.log("color: ", snapshot.val().value);
-        //valor que corresponde para cambiar color de led el elemento bathroom
-        sendToArduinio(snapshot.val().value+"\n");
-
-    }, function (errorObject) {
-        console.log("The read failed: " + errorObject.code);
-    });
+    
 });
